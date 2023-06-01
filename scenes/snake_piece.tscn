@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/SnakePiece.cs" id="1_v7xq0"]
+[ext_resource type="Texture2D" uid="uid://bgrvafi0h23km" path="res://assets/snake_piece.png" id="2_cctad"]
+
+[node name="SnakePiece" type="Node2D"]
+script = ExtResource("1_v7xq0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_cctad")

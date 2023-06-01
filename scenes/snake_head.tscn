@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://ctv0ndyxmuk4v"]
+
+[ext_resource type="Script" path="res://scripts/SnakeHead.cs" id="1_ycuwc"]
+[ext_resource type="Texture2D" uid="uid://dvk6pos7uwxgk" path="res://assets/snake_head_right.png" id="2_gxtyv"]
+
+[node name="SnakeHead" type="Node2D"]
+position = Vector2(72, 72)
+script = ExtResource("1_ycuwc")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_gxtyv")
+
+[node name="Timer" type="Timer" parent="."]

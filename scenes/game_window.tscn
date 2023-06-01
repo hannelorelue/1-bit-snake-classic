@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwclxihuh3j5i"]
+
+[ext_resource type="Script" path="res://scripts/GameWindow.cs" id="1_0xnrj"]
+[ext_resource type="PackedScene" uid="uid://ctv0ndyxmuk4v" path="res://scenes/snake_head.tscn" id="2_4ahn3"]
+
+[node name="GameWindow" type="Node2D"]
+script = ExtResource("1_0xnrj")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 433.0
+offset_bottom = 271.0
+color = Color(0, 0, 0, 1)
+
+[node name="SnakeHead" parent="." instance=ExtResource("2_4ahn3")]
+
+[node name="GameOverWindow" type="Window" parent="."]
+position = Vector2i(150, 60)
+visible = false
+
+[node name="Label" type="Label" parent="GameOverWindow"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Game over"
+
+[node name="FoodHolder" type="Node" parent="."]
+
+[node name="SnakePieces" type="Node" parent="."]
+
+[node name="Timer" type="Timer" parent="."]
