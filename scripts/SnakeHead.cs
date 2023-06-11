@@ -27,6 +27,29 @@ public partial class SnakeHead : Node2D
         Position = new Vector2(160,160);
     }
 
+
+    public override void _PhysicsProcess(double delta)
+    {
+        PerviousDirection = Direction;
+        PerviousPosition = Position;
+        if (Input.IsActionPressed("move_right"))
+        {
+            ChangeDirection(Vector2.Right);
+        }
+        if (Input.IsActionPressed("move_left"))
+        {
+            ChangeDirection(Vector2.Left);
+        }
+        if (Input.IsActionPressed("move_down"))
+        {
+            ChangeDirection(Vector2.Down);
+        }
+        if (Input.IsActionPressed("move_up"))
+        {
+            ChangeDirection(Vector2.Up);
+        }
+    }
+
     public void MoveHead()
     {
         Position += Direction * new Vector2(16,16) * Speed;
@@ -40,33 +63,33 @@ public partial class SnakeHead : Node2D
         }
     }
 
-    public override void _PhysicsProcess(double delta)
+    public void ChangeDirection(Vector2 input)
     {
-        PerviousDirection = Direction;
-        PerviousPosition = Position;
-        if (Input.IsActionPressed("move_right") && Direction != Vector2.Left)
+
+        if (input == Vector2.Right && Direction != Vector2.Left)
         {
             Direction = Vector2.Right;
             Sprite.Texture = RightSprite;
             Sprite.FlipH = false;
         }
-        if (Input.IsActionPressed("move_left") &&  Direction != Vector2.Right)
+        if (input == Vector2.Left &&  Direction != Vector2.Right)
         {
             Direction = Vector2.Left;
             Sprite.Texture = RightSprite;
             Sprite.FlipH = true;
         }
-        if (Input.IsActionPressed("move_down") &&  Direction != Vector2.Up)
+        if (input == Vector2.Down &&  Direction != Vector2.Up)
         {
             Direction = Vector2.Down;
             Sprite.Texture = DownSprite;
             Sprite.FlipV = false;
         }
-        if (Input.IsActionPressed("move_up") && Direction != Vector2.Down )
+        if (input == Vector2.Up && Direction != Vector2.Down )
         {
             Direction = Vector2.Up;
             Sprite.Texture = DownSprite;
             Sprite.FlipV = true;
         }
+
     }
 }

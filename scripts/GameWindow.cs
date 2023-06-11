@@ -8,6 +8,8 @@ public partial class GameWindow : Node2D
     public SnakeHead Head;
     public Vector2 Headposition;
     private Timer timer;
+    private List<Vector2> FoodPositions;
+    private IEnumerable<SnakePiece> SnakePositions;
 
     public override void _Ready()
     {
@@ -49,7 +51,32 @@ public partial class GameWindow : Node2D
         var foodPosition = new Vector2();
         foodPosition.X = rand.Next(2, 24);
         foodPosition.Y = rand.Next(2, 14);
-        foodPiece.Position = foodPosition * new Vector2(16,16);
+        foodPosition = foodPosition * new Vector2(16,16);
+
+        if (SnakePositions == null) 
+        {
+            foodPiece.Position = foodPosition;
+            return;
+        }
+        
+        int k = 0;
+        while (k < 10000) 
+        {
+            foodPosition.X = rand.Next(2, 24);
+            foodPosition.Y = rand.Next(2, 14);
+            foodPosition = foodPosition * new Vector2(16,16);
+            foodPiece.Position = foodPosition;
+            var Foodbox = GetHitBox<Food>(foodPiece);
+            foreach (var item in SnakePositions)
+            {
+                if (!Foodbox.Intersects(GetHitBox<SnakePiece>(item)))
+                {
+                    return;
+                }   
+            }
+            k ++;
+        }
+        
     }
 
     private void GameOver()
@@ -78,16 +105,16 @@ public partial class GameWindow : Node2D
 
     public void MoveSnakePiece()
     {
-        var SnakePieces = GetNode<Node>("SnakePieces").GetChildren().OfType<SnakePiece>();
+        SnakePositions = GetNode<Node>("SnakePieces").GetChildren().OfType<SnakePiece>();
         var PerviousPosition = Head.PerviousPosition + Head.PerviousDirection * (-1); 
         var PerviousDirection = Head.PerviousDirection;
         var TempPosition = Head.Position;
         var TempDirection = Head.Direction;
         
-        for(int index = 0; index < SnakePieces.Count(); index++) 
+        for(int index = 0; index < SnakePositions.Count(); index++) 
         {
-            TempPosition = SnakePieces.ElementAt(index).Position;
-            SnakePieces.ElementAt(index).Position = PerviousPosition;
+            TempPosition = SnakePositions.ElementAt(index).Position;
+            SnakePositions.ElementAt(index).Position = PerviousPosition;
             PerviousPosition = TempPosition;
         }
 
@@ -96,10 +123,10 @@ public partial class GameWindow : Node2D
     private bool isFoodEaten()
     {
         var foodPieces = GetNode<Node>("FoodHolder").GetChildren().OfType<Food>();
-        var Headbox = GetHitBox<SnakeHead>(Head);
+        Rect2 Headbox = GetHitBox<SnakeHead>(Head);
         for(int index = 0 ; index < foodPieces.Count(); index++)
         {
-            var Foodbox = GetHitBox<Food>(foodPieces.ElementAt(index));
+            Rect2 Foodbox = GetHitBox<Food>(foodPieces.ElementAt(index));
             if (Headbox.Intersects(Foodbox) )
             {
                 GetNode<Node>("FoodHolder").GetChild(index).QueueFree();
@@ -111,12 +138,11 @@ public partial class GameWindow : Node2D
 
     private bool HasSnakeBittenItself() 
     {
-        var SnakePieces = GetNode<Node>("SnakePieces").GetChildren().OfType<SnakePiece>();
         var Headbox = GetHitBox<SnakeHead>(Head);
 
-        for(int index = 0; index < SnakePieces.Count(); index++) 
+        for(int index = 0; index < SnakePositions.Count(); index++) 
         {
-            var SnakePiecebox = GetHitBox<SnakePiece>(SnakePieces.ElementAt(index));
+            Rect2 SnakePiecebox = GetHitBox<SnakePiece>(SnakePositions.ElementAt(index));
             if (Headbox.Intersects(SnakePiecebox))
             {
                 GameOver();
