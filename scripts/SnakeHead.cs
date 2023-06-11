@@ -25,33 +25,18 @@ public partial class SnakeHead : Node2D
         ScreenSize = GetViewportRect().Size;
         Sprite = GetNode<Sprite2D>("Sprite2D");
         Position = new Vector2(160,160);
+        PerviousDirection = Direction;
+        PerviousPosition = Position;
     }
 
 
     public override void _PhysicsProcess(double delta)
     {
-        PerviousDirection = Direction;
-        PerviousPosition = Position;
-        if (Input.IsActionPressed("move_right"))
-        {
-            ChangeDirection(Vector2.Right);
-        }
-        if (Input.IsActionPressed("move_left"))
-        {
-            ChangeDirection(Vector2.Left);
-        }
-        if (Input.IsActionPressed("move_down"))
-        {
-            ChangeDirection(Vector2.Down);
-        }
-        if (Input.IsActionPressed("move_up"))
-        {
-            ChangeDirection(Vector2.Up);
-        }
     }
 
     public void MoveHead()
     {
+        PerviousPosition = Position;
         Position += Direction * new Vector2(16,16) * Speed;
         Position = new Vector2(
             x: Mathf.Clamp(Position.X, 0, ScreenSize.X),
@@ -65,7 +50,7 @@ public partial class SnakeHead : Node2D
 
     public void ChangeDirection(Vector2 input)
     {
-
+        PerviousDirection = Direction;
         if (input == Vector2.Right && Direction != Vector2.Left)
         {
             Direction = Vector2.Right;

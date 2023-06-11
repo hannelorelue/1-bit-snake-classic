@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="snake_classic"
+run/main_scene="res://scenes/game_window.tscn"
 config/features=PackedStringArray("4.0", "C#", "Mobile")
 config/icon="res://icon.svg"
 
