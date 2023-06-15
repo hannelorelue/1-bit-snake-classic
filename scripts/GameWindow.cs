@@ -7,47 +7,43 @@ public partial class GameWindow : Node2D
 {
     public SnakeHead Head;
     public Vector2 Headposition;
-    private Timer timer;
-    private List<Vector2> FoodPositions;
-    private IEnumerable<SnakePiece> SnakePositions;
-    private AStarGrid2D astarGrid;
+    private Timer _timer;
+    private List<Vector2> _foodPositions;
+    private IEnumerable<SnakePiece> _snakeParts;
+    private AStarGrid2D _astarGrid;
 
     public override void _Ready()
     {
-        timer = GetNode<Timer>("Timer");
-        timer.WaitTime = 0.3f;
-        timer.Start();
-        timer.Timeout += OnTimerTimeout;
+        _timer = GetNode<Timer>("Timer");
+        _timer.WaitTime = 0.3f;
+        _timer.Start();
+        _timer.Timeout += OnTimerTimeout;
 
         Head = GetNode<SnakeHead>("SnakeHead");
         Head.Collision += GameOver;
 
-        FoodPositions = new List<Vector2>();
+        _foodPositions = new List<Vector2>();
         SpawnFood();
         SpawnFood();
         SpawnFood();
 
 
         Head.MoveHead();
-        astarGrid = new AStarGrid2D();
-        astarGrid.DefaultComputeHeuristic = AStarGrid2D.Heuristic.Manhattan;
-        astarGrid.DiagonalMode = AStarGrid2D.DiagonalModeEnum.Never;
-        astarGrid.Size = new Vector2I(27, 16);
-        astarGrid.CellSize = new Vector2I(16, 16);
-        astarGrid.Update();
+        _astarGrid = new AStarGrid2D();
+        _astarGrid.DefaultComputeHeuristic = AStarGrid2D.Heuristic.Manhattan;
+        _astarGrid.DiagonalMode = AStarGrid2D.DiagonalModeEnum.Never;
+        _astarGrid.Size = new Vector2I(27, 16);
+        _astarGrid.CellSize = new Vector2I(16, 16);
+        _astarGrid.Update();
     }
 
-    public override void _PhysicsProcess(double delta)
-    { 
+    private void OnTimerTimeout()
+    {
         if (isFoodEaten())
         {
             AddSnakePiece();
             SpawnFood();
         }
-    }
-
-    private void OnTimerTimeout()
-    {
         Head.MoveHead();
         MoveSnakePiece();
         HasSnakeBittenItself();
@@ -63,16 +59,16 @@ public partial class GameWindow : Node2D
 
     public Vector2 FindShortestDistance(Vector2 target)
     {
-        if (FoodPositions.Count == 0)
+        if (_foodPositions.Count == 0)
         {
             throw new ArgumentException("The points list cannot be empty.");
         }
 
-        float shortestDistance = target.DistanceTo(FoodPositions[0]);
+        float shortestDistance = target.DistanceTo(_foodPositions[0]);
         int smallestIndex = 0 ;
-        for (int i = 1; i < FoodPositions.Count; i++)
+        for (int i = 1; i < _foodPositions.Count; i++)
         {
-            float distance = target.DistanceTo(FoodPositions[i]);
+            float distance = target.DistanceTo(_foodPositions[i]);
 
             if (distance < shortestDistance)
             {
@@ -81,7 +77,7 @@ public partial class GameWindow : Node2D
             }
         }
 
-        return FoodPositions[smallestIndex];
+        return _foodPositions[smallestIndex];
     }
 
     public void SpawnFood()
@@ -96,10 +92,10 @@ public partial class GameWindow : Node2D
         foodPosition.Y = rand.Next(2, 14);
         foodPosition = foodPosition * new Vector2(16,16);
 
-        if (SnakePositions == null) 
+        if (_snakeParts == null) 
         {
             foodPiece.Position = foodPosition;
-            FoodPositions.Add(foodPosition);
+            _foodPositions.Add(foodPosition);
             return;
         }
         
@@ -111,11 +107,11 @@ public partial class GameWindow : Node2D
             foodPosition = foodPosition * new Vector2(16,16);
             foodPiece.Position = foodPosition;
             var Foodbox = GetHitBox<Food>(foodPiece);
-            foreach (var item in SnakePositions)
+            foreach (var item in _snakeParts)
             {
                 if (!Foodbox.Intersects(GetHitBox<SnakePiece>(item)))
                 {
-                    FoodPositions.Add(foodPosition);
+                    _foodPositions.Add(foodPosition);
                     return;
                 }   
             }
@@ -140,7 +136,6 @@ public partial class GameWindow : Node2D
         var SnakePieces = GetNode<Node>("SnakePieces").GetChildren().OfType<SnakePiece>();
         if (SnakePieces.Count() == 0) {
             Vector2 offset = -Head.PerviousDirection * 16;
-           // var newPosition = Head.PerviousPosition + Head.PerviousDirection * (-1) * new Vector2(16,16); 
             var newPosition = Head.PerviousPosition + offset;
             snakePiece.Position = newPosition;
             snakePiece.Direction = Head.PerviousDirection;
@@ -155,20 +150,20 @@ public partial class GameWindow : Node2D
 
     public void MoveSnakePiece()
     {
-        SnakePositions = GetNode<Node>("SnakePieces").GetChildren().OfType<SnakePiece>();
+        _snakeParts = GetNode<Node>("SnakePieces").GetChildren().OfType<SnakePiece>();
         var PerviousPosition = Head.PerviousPosition - Head.PerviousDirection; 
         var PerviousDirection = Head.PerviousDirection;
         var TempPosition = Head.Position;
         var TempDirection = Head.Direction;
         
-        for(int index = 0; index < SnakePositions.Count(); index++) 
+        for(int index = 0; index < _snakeParts.Count(); index++) 
         {
-            TempPosition = SnakePositions.ElementAt(index).Position;
-            SnakePositions.ElementAt(index).Position = PerviousPosition;
+            TempPosition = _snakeParts.ElementAt(index).Position;
+            _snakeParts.ElementAt(index).Position = PerviousPosition;
             PerviousPosition = TempPosition;
 
-            TempDirection = SnakePositions.ElementAt(index).Direction;
-            SnakePositions.ElementAt(index).Direction = PerviousDirection;
+            TempDirection = _snakeParts.ElementAt(index).Direction;
+            _snakeParts.ElementAt(index).Direction = PerviousDirection;
             PerviousDirection = TempDirection;
         }
     }
@@ -182,7 +177,7 @@ public partial class GameWindow : Node2D
             Rect2 Foodbox = GetHitBox<Food>(foodPieces.ElementAt(index));
             if (Headbox.Intersects(Foodbox) )
             {
-                FoodPositions.Remove(foodPieces.ElementAt(index).Position);
+                _foodPositions.Remove(foodPieces.ElementAt(index).Position);
                 GetNode<Node>("FoodHolder").GetChild(index).QueueFree();
                 return true;
             }
@@ -194,9 +189,9 @@ public partial class GameWindow : Node2D
     {
         var Headbox = GetHitBox<SnakeHead>(Head);
 
-        for(int index = 0; index < SnakePositions.Count(); index++) 
+        for(int index = 0; index < _snakeParts.Count(); index++) 
         {
-            Rect2 SnakePiecebox = GetHitBox<SnakePiece>(SnakePositions.ElementAt(index));
+            Rect2 SnakePiecebox = GetHitBox<SnakePiece>(_snakeParts.ElementAt(index));
             if (Headbox.Intersects(SnakePiecebox))
             {
                 GameOver();
@@ -217,20 +212,20 @@ public partial class GameWindow : Node2D
 
     private Vector2 GetNextPosition( Vector2 beginning, Vector2  end )
     {
-        astarGrid.Clear();
-        astarGrid.Size = new Vector2I(27, 16);
-        astarGrid.CellSize = new Vector2I(16, 16);
-        astarGrid.Update();
-        if (SnakePositions != null)
+        _astarGrid.Clear();
+        _astarGrid.Size = new Vector2I(27, 16);
+        _astarGrid.CellSize = new Vector2I(16, 16);
+        _astarGrid.Update();
+        if (_snakeParts != null)
         {
-            foreach (var item in SnakePositions)
+            foreach (var item in _snakeParts)
             {
                 var point  = (Vector2I) (item.Position/new Vector2(16, 16)).Round();
               //  GD.Print("point:" +point);
-                astarGrid.SetPointSolid(point, true);
+                _astarGrid.SetPointSolid(point, true);
             }
         }
-        var path = astarGrid.GetPointPath((Vector2I) beginning/new Vector2I(16, 16), (Vector2I) end/new Vector2I(16, 16));
+        var path = _astarGrid.GetPointPath((Vector2I) beginning/new Vector2I(16, 16), (Vector2I) end/new Vector2I(16, 16));
         return (Vector2) path[1];
     }
 }

@@ -1,8 +1,9 @@
-# Snake Game
+# 🐍Snake Game
 
-## Stand am Ende der vier Stunden
+This is an implementation of the classic snake game in Godot using C# with 1-bit graphics.
 
-Schangenkopf bewegt sich durch Tastatureingabe.
-Essen wird in Ready gespawned
-Wenn der Kopf das Essen beruhrt, wird ein Neues Snakepiece erzeugt, aber es bewegt sich noch nicht mit
-Wenn der Kopf den Rand des Fensters beruhrt, ist das Spiel vorbei
+## The two modes
+
+The game can be played with the wads keys or let the game ai play by itself.
+
+The ai uses Godot's build-in AStarGird class to find the shortest path between the current position of the snake's head and the food.

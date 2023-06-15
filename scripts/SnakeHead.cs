@@ -32,6 +32,23 @@ public partial class SnakeHead : Node2D
 
     public override void _PhysicsProcess(double delta)
     {
+        // Uncomment for playing with user input
+        // if (Input.IsActionPressed("move_right"))
+        // {
+        //     ChangeDirection(Vector2.Right);
+        // }
+        // if (Input.IsActionPressed("move_left"))
+        // {
+        //     ChangeDirection(Vector2.Left);
+        // }
+        // if (Input.IsActionPressed("move_down"))
+        // {
+        //     ChangeDirection(Vector2.Down);
+        // }
+        // if (Input.IsActionPressed("move_up"))
+        // {
+        //     ChangeDirection(Vector2.Up);
+        // }
     }
 
     public void MoveHead()
