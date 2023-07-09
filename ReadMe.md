@@ -1,5 +1,7 @@
 # 🐍Snake Game
 
+[<img src="assets/snake_video.gif" width="480" />](assets/snake_video.gif)
+
 This is an implementation of the classic snake game in Godot using C# with 1-bit graphics.
 
 ## The two modes
